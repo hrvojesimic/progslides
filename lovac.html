@@ -22,13 +22,13 @@
     <textarea id="source">
 class: center, middle, inverse
 
-# Zadatak: Lovac
+# Lovac
 
 (Pritisnite strelicu desno za naprijed.)
 
 ---
 
-# Zadatak
+## Zadatak
 
 Za zadan položaj lovca na praznoj šahovskoj ploči, izračunaj koliko različitih polja napada.
 
@@ -78,14 +78,14 @@ Slučajevi moraju biti s raznih mjesta na ploči:
 Izračunajte koje bi izlaze morali dobiti ako vam program dobro radi, ovako:
 
 ```
-    A . . . . . . B      A: 1 1 -> 7
-    . . . . . . . .      B: 1 8 -> 7
-    . . . . . . . H      C: 8 8 -> 7
-    . . . . . . . .      D: 8 2 -> 7
-    . . . G . . . .      E: 7 7 -> 9
-    . . . . F . . .      F: 6 5 -> 11
-    . . . . . . E .      G: 5 4 -> 13
-    . D . . . . . C      H: 3 8 -> 7
+    A . . . . . . B      A: 1 1 → 7
+    . . . . . . . .      B: 1 8 → 7
+    . . . . . . . H      C: 8 8 → 7
+    . . . . . . . .      D: 8 2 → 7
+    . . . G . . . .      E: 7 7 → 9
+    . . . . F . . .      F: 6 5 → 11
+    . . . . . . E .      G: 5 4 → 13
+    . D . . . . . C      H: 3 8 → 7
 ```
 
 ---
@@ -115,6 +115,8 @@ while (x <= 8 and y <= 8) {
   y++;
 }
 ```
+
+I kako bi izgledale sve četiri potrebne petlje?
 
 ---
 
@@ -159,78 +161,6 @@ for (int x = a + 1, y = b + 1; x <= 8 and y <= 8; x++, y++) {
 Vidite kako možete koristiti zarez za odvajanje izraza?
 
 **Pitanje**: Je li vam program koji koristi `for` čitljiviji od `while`?
-
----
-
-## Jednostavniji izračun
-
-Ali može i jednostavnije od toga.
-
-Lovac dijeli šahovsku ploču na četiri pravokutna područja, a svako od pravokutnih područja ima svoju visinu i širinu:
-
-```
-  . . | . . X . .        1 2 | 1 2 3 4 5
-  X . | . X . . .        2 . | 2 . . . .
-  . X | X . . . .        3 . | 3 . . . .
-  ----O----------        ----O----------
-  . X | X . . . .        1 2 | 1 2 3 4 5
-  X . | . X . . .        2 . | 2 . . . .
-  . . | . . X . .        3 . | 3 . . . .
-  . . | . . . X .        4 . | 4 . . . .
-```
-
-**Pitanje**: Kako bi mogli odrediti duljinu kraka u pravokutnom području, ako mu znamo visinu i širinu?
-
----
-
-## Funkcija min
-
-Krak u svakom području može biti dug kolika je *manja* dimenzija pravokutnika. U prethodnom zadatku bi to bilo 2 + 3 + 2 + 4 = 11.
-
-Za izračun manjeg od dva broja koristite standardnu (std::) funkciju `min()`. Npr. `min(2, 3)` vraća 2, a `min(7, 1)` vraća 1.
-
-Da morate sami definirati ovu funkciju (*što ne morate!*) to bi mogli napraviti vrlo jednostavno.
-
-Ovo je primjer funkcije koja vraća udvostručeni ulazni broj. I parametar i povratna vrijednost su tipa `int`:
-
-```cpp
-      int duplo(int i) {
-        return 2 * i;
-      }
-```
-
-**Zadatak**: Probajte sami implementirati funkciju koja vraća manji od dva argumenta.
-
----
-
-## Definicija funkcije min
-
-Funkcija je procedura koja vraća neku vrijednost. Funkcija vraća vrijednost tako da na kraju svog izvršavanja ima izjavu `return` nakon koje napišemo izraz koji izračunava tu povratnu vrijednost.
-
-U C++-u se piše tako da napišete tip povratne vrijednosti, zatim naziv funkcije, zatim oble zagrade koje sadrže popis parametara. Svaki parametar ima tip i naziv, a odvojeni su zarezom.
-
-Evo kako bi najlakše implementirali funkciju min da već nije definirana:
-
-```cpp
-     int min(int a, int b) {
-       return a < b? a : b;
-     }
-```
-
-**Pitanje**: Kako bi mogli u C++-u izračunati koliko je dug krak u svakom području? Kad ih zbrojimo to će nam dati krajnji rezultat.
-
----
-
-## Rješenje koje koristi funkciju min
-
-Izračun broja napadanih polja svedemo na zbrajanje manjih dimenzija četiri pravokutna područja:
-
-```cpp
-cout << min(a - 1, b - 1) + 
-        min(8 - a, b - 1) +
-        min(a - 1, 8 - b) + 
-        min(8 - a, 8 - b);
-```
 
 ---
 
@@ -311,11 +241,108 @@ Prvo gledamo područje "D": prvi i zadnji red, prvi i zadnji stupac ploče.
 Onda možemo gledati je li lovac u kvadratu "b". Ako nije ni tu, onda mora biti u "A".
 
 ```cpp
-if      (a == 1 or a == 8 or b == 1 or b == 8) cout << 7;
-else if (a == 2 or a == 7 or b == 2 or b == 7) cout << 9;
-else if (a == 3 or a == 6 or b == 3 or b == 6) cout << 11;
-else if (a == 4 or a == 5 or b == 4 or b == 5) cout << 13;
+if (a == 1 or a == 8 or b == 1 or b == 8)
+  cout << 7;
+else if (a == 2 or a == 7 or b == 2 or b == 7)
+  cout << 9;
+else if (a == 3 or a == 6 or b == 3 or b == 6)
+  cout << 11;
+else
+  cout << 13;
 ```
+
+Ovo rješenje je kraće i brže se izvršava od prethodnih.
+
+---
+
+## Još jednostavniji izračun
+
+Ali može i jednostavnije od toga.
+
+Lovac dijeli šahovsku ploču na četiri pravokutna područja, a svako od pravokutnih područja ima svoju visinu i širinu:
+
+```
+  . . | . . X . .        1 2 | 1 2 3 4 5
+  X . | . X . . .        2 . | 2 . . . .
+  . X | X . . . .        3 . | 3 . . . .
+  ----O----------        ----O----------
+  . X | X . . . .        1 2 | 1 2 3 4 5
+  X . | . X . . .        2 . | 2 . . . .
+  . . | . . X . .        3 . | 3 . . . .
+  . . | . . . X .        4 . | 4 . . . .
+```
+
+**Pitanje**: Kako bi mogli odrediti duljinu kraka u pravokutnom području, ako mu znamo visinu i širinu?
+
+---
+
+## Funkcija min
+
+Krak u svakom području može biti dug kolika je *manja* dimenzija pravokutnika. U prethodnom zadatku bi to bilo 2 + 3 + 2 + 4 = 11.
+
+Za izračun manjeg od dva broja koristite standardnu (std::) funkciju `min()`. Npr. `min(2, 3)` vraća 2, a `min(7, 1)` vraća 1.
+
+Da morate sami definirati ovu funkciju (*što ne morate!*) to bi mogli napraviti vrlo jednostavno.
+
+Ovo je primjer funkcije koja vraća udvostručeni ulazni broj. I parametar i povratna vrijednost su tipa `int`:
+
+```cpp
+      int duplo(int i) {
+        return 2 * i;
+      }
+```
+
+**Zadatak**: Probajte sami implementirati funkciju koja vraća manji od dva argumenta.
+
+---
+
+## Definicija funkcije min
+
+Funkcija je procedura koja vraća neku vrijednost. Funkcija vraća vrijednost tako da na kraju svog izvršavanja ima izjavu `return` nakon koje napišemo izraz koji izračunava tu povratnu vrijednost.
+
+U C++-u se piše tako da napišete tip povratne vrijednosti, zatim naziv funkcije, zatim oble zagrade koje sadrže popis parametara. Svaki parametar ima tip i naziv, a odvojeni su zarezom.
+
+Evo kako bi najlakše implementirali funkciju min:
+
+```cpp
+     int min(int a, int b) {
+       return a < b? a : b;
+     }
+```
+Ponavljam, to ne treba raditi jer je već ugrađena u C++.
+
+**Pitanje**: Kako bi mogli u C++-u izračunati koliko je dug krak u svakom području? Kad zbrojimo duljine krakova to će nam dati krajnji rezultat.
+
+---
+
+## Rješenje koje koristi funkciju min
+
+Izračun broja napadanih polja svedemo na zbrajanje manjih dimenzija četiri pravokutna područja:
+
+```cpp
+cout << min(a - 1, b - 1) + 
+        min(8 - a, b - 1) +
+        min(a - 1, 8 - b) + 
+        min(8 - a, 8 - b);
+```
+
+Ovo rješenje je još kraće, samo jedan izraz. 
+
+---
+
+## Rekapitulacija
+
+Imali smo četiri vrlo različita rješenja:
+- četiri while petlje
+- četiri for petlje
+- veliki if
+- jedan izraz s funkcijom min
+
+Dobro, while i for rješenja nisu bila jako različita.
+
+Ali pokazuje kako ima više načina da se riješi problem. Neki od njih se brže izvršavaju od drugih, a neke možete napisati brže i s manje grešaka. Nekih se lakše dosjetiti, neki su jasniji od drugih kad se napišu.
+
+Koje se vama svidilo?
 
 ---
 class: center, middle
