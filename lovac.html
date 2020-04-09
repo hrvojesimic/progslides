@@ -24,6 +24,8 @@ class: center, middle, inverse
 
 # Zadatak: Lovac
 
+(Pritisnite strelicu desno za naprijed.)
+
 ---
 
 # Zadatak
@@ -234,7 +236,7 @@ cout << min(a - 1, b - 1) +
 
 ## Antonijevo rješenje
 
-Antonio je primjetio kako uvijek dobija samo jedan od četiri različita broja kao izlaz: 7, 9, 11 ili 13. Zašto je tako? Uvijek postoji dalji rub ploče s koje se vidi uvijek sedam napadanih polja, prije nego što se dođe do retka ili stupca lovca. Pogledajte skicu ove četiri ploče:
+Antonio je primjetio kako uvijek dobija samo jedan od četiri različita broja kao izlaz: 7, 9, 11 ili 13. Zašto je tako? Gledajući s ruba ploče koji je najdalji od lovca uvijek se vidi točno sedam napadanih polja, prije nego što se dođe do retka ili stupca gdje je lovac. Pogledajte skicu ove četiri ploče:
 
 ```
 
@@ -250,11 +252,13 @@ X . . . X . . .    . O . . . . . .    . X . . . . . X    . X . . . X . .
 1 2   3 4 5 6 7
 ```
 
+No, tih sedam polja očito nije cijelo rješenje. Što je s stranom ploče iza lovca?
+
 ---
 
 ## Napadana polja s druge strane lovca
 
-No, tih sedam polja očito nije cijelo rješenje. Ovisno o tome koliko je lovac daleko od ruba, s druge strane ima još 0, 2, 4, ili 6 napadanih polja. Pogledajte skicu:
+Ovisno o tome koliko je lovac daleko od ruba, s iza lovca ima još 0, 2, 4, ili 6 napadanih polja. Pogledajte skicu:
 
 ```
 Lovac na rubu      1 polje od ruba    2 polja od ruba    U sredini ploče
@@ -273,7 +277,7 @@ X . . . X . . .    . O . . . . . .    . X . . . . . X    . X . . . X . .
 uvijek 7 polja     uvijek 9 polja     uvijek 11 polja    uvijek 13 polja
 ```
 
-**Pitanje**: Kako bi mogli podijeliti ploču prema tome koliko lovac na tom mjestu napada polja (7, 9, 11 ili 13)?
+**Pitanje**: Kako bi mogli podijeliti sva polja na ploči prema tome koliko je lovac na tom mjestu udaljen od ruba ploče?
 
 ---
 
