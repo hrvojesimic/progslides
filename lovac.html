@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lovac C++</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Roboto+Mono:wght@500&display=swap);
+      @import url(https://fonts.googleapis.com/css2?family=Lora);
+
+      body { font-family: 'Lora'; }
+      h1, h2, h3 {
+        font-family: 'Open Sans';
+        font-weight: 300;
+      }
+      .remark-code, .remark-inline-code {
+         font-family: 'Roboto Mono';
+         font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse
+
+# Zadatak: Lovac
+
+---
+
+# Zadatak
+
+Za zadan položaj lovca na praznoj šahovskoj ploči, izračunaj koliko različitih polja napada.
+
+Ulaz:
+- *A*, redak lovca, prirodni broj <= 8
+- *B*, stupac na kojem je postavljen lovac, prirodni broj <= 8
+
+Izlaz je broj polja koje lovac napada.
+
+Primjer za ulaz *A* = 4, *B* = 3, lovac označen s `O` napada 11 polja označenih `X`.
+
+```
+. . . . . X . .
+X . . . X . . .
+. X . X . . . .
+. . O . . . . .
+. X . X . . . .
+X . . . X . . .
+. . . . . X . .
+. . . . . . X .
+```
+
+---
+
+## Testni slučajevi
+
+Prije nego što smišljate algoritam trebali bi smisliti testne slučajeve.
+
+Ovaj zadatak je jednostavan jer uzima samo dva broja od jedan do osam, tako da sve skupa ima samo 64 moguća ulaza.
+
+Dobri testni slučajevi su raznoliki, ima bar jedan sa svih karakterističnih pozicija na ploči. Pogotovo obratite pažnju na rubne slučajeve i ekstremne vrijednosti (ovdje su 1 i 8).
+
+**Pitanje**: Koja bi mjesta bila dobri testni slučajevi za ovaj zadatak? Probajte odabrati osam mjesta na šahovskoj ploči.
+
+---
+
+## Primjer testnih slučajeva
+
+Ja sam definirao ovih osam rubnih slučajeva, prikazano dolje.
+
+Slučajevi moraju biti s raznih mjesta na ploči:
+- neke točke na kutevima (A, B, C)
+- točke na rubovima ploče, ali ne u kutu (D, H)
+- neke po sredini ploče (F, G)
+- neke ni vamo ni tamo (E)
+
+Izračunajte koje bi izlaze morali dobiti ako vam program dobro radi, ovako:
+
+```
+    A . . . . . . B      A: 1 1 -> 7
+    . . . . . . . .      B: 1 8 -> 7
+    . . . . . . . H      C: 8 8 -> 7
+    . . . . . . . .      D: 8 2 -> 7
+    . . . G . . . .      E: 7 7 -> 9
+    . . . . F . . .      F: 6 5 -> 11
+    . . . . . . E .      G: 5 4 -> 13
+    . D . . . . . C      H: 3 8 -> 7
+```
+
+---
+
+## Mašino i Ivanovo rješenje
+
+Napadana polja se u općem slučaju šire u četiri kraka od lovca:
+
+```
+    . . . . . X . .
+    X . . . X . . .
+    . X . X . . . .
+    . . O . . . . .
+    . X . X . . . .
+    X . . . X . . .
+    . . . . . X . .
+    . . . . . . X .
+```
+
+Tako da petljom možemo brojati koliko ih ima u svakom koraku. Npr. za krak dolje desno krenemo od a+1 i b+1 pa uvećavamo brojač napadanih polja (`napadam`) za jedan dokle god još nismo izašli iz ploče. Ovako:
+
+```cpp
+int x = b + 1, y = a + 1;
+while (x <= 8 and y <= 8) {
+  napadam++;
+  x++;
+  y++;
+}
+```
+
+---
+
+## Zamjena while s for-om
+
+Svaki `while` se može napisati kraće s `for` petljom.
+
+**Pitanje**: Kako bi mogli prepraviti donju while petlju s kraćom for izjavom?
+
+```cpp
+int x = b + 1, y = a + 1;
+while (x <= 8 and y <= 8) {
+  napadam++;
+  x++;
+  y++;
+}
+```
+
+---
+
+## Rješenje s for petljom
+
+Cijeli izračun se može napisati s četiri for petlje ovako:
+
+```cpp
+int napadam = 0
+
+for (int x = 1,     y = 1;     x < a and y < b;   x++, y++) {
+  napadam++;
+}
+for (int x = 1,     y = b + 1; x < a and y <= 8;  x++, y++) {
+  napadam++;
+}
+for (int x = a + 1, y = 1;     x <= 8 and y < b;  x++, y++) {
+  napadam++;
+}
+for (int x = a + 1, y = b + 1; x <= 8 and y <= 8; x++, y++) {
+  napadam++;
+}
+```
+
+Vidite kako možete koristiti zarez za odvajanje izraza?
+
+**Pitanje**: Je li vam program koji koristi `for` čitljiviji od `while`?
+
+---
+
+## Jednostavniji izračun
+
+Ali može i jednostavnije od toga.
+
+Lovac dijeli šahovsku ploču na četiri pravokutna područja, a svako od pravokutnih područja ima svoju visinu i širinu:
+
+```
+  . . | . . X . .        1 2 | 1 2 3 4 5
+  X . | . X . . .        2 . | 2 . . . .
+  . X | X . . . .        3 . | 3 . . . .
+  ----O----------        ----O----------
+  . X | X . . . .        1 2 | 1 2 3 4 5
+  X . | . X . . .        2 . | 2 . . . .
+  . . | . . X . .        3 . | 3 . . . .
+  . . | . . . X .        4 . | 4 . . . .
+```
+
+**Pitanje**: Kako bi mogli odrediti duljinu kraka u pravokutnom području, ako mu znamo visinu i širinu?
+
+---
+
+## Funkcija min
+
+Krak u svakom području može biti dug kolika je *manja* dimenzija pravokutnika. U prethodnom zadatku bi to bilo 2 + 3 + 2 + 4 = 11.
+
+Za izračun manjeg od dva broja koristite standardnu (std::) funkciju `min()`. Npr. `min(2, 3)` vraća 2, a `min(7, 1)` vraća 1.
+
+Da morate sami definirati ovu funkciju (*što ne morate!*) to bi mogli napraviti vrlo jednostavno.
+
+Ovo je primjer funkcije koja vraća udvostručeni ulazni broj. I parametar i povratna vrijednost su tipa `int`:
+
+```cpp
+      int duplo(int i) {
+        return 2 * i;
+      }
+```
+
+**Zadatak**: Probajte sami implementirati funkciju koja vraća manji od dva argumenta.
+
+---
+
+## Definicija funkcije min
+
+Funkcija je procedura koja vraća neku vrijednost. Funkcija vraća vrijednost tako da na kraju svog izvršavanja ima izjavu `return` nakon koje napišemo izraz koji izračunava tu povratnu vrijednost.
+
+U C++-u se piše tako da napišete tip povratne vrijednosti, zatim naziv funkcije, zatim oble zagrade koje sadrže popis parametara. Svaki parametar ima tip i naziv, a odvojeni su zarezom.
+
+Evo kako bi najlakše implementirali funkciju min da već nije definirana:
+
+```cpp
+     int min(int a, int b) {
+       return a < b? a : b;
+     }
+```
+
+**Pitanje**: Kako bi mogli u C++-u izračunati koliko je dug krak u svakom području? Kad ih zbrojimo to će nam dati krajnji rezultat.
+
+---
+
+## Rješenje koje koristi funkciju min
+
+Izračun broja napadanih polja svedemo na zbrajanje manjih dimenzija četiri pravokutna područja:
+
+```cpp
+cout << min(a - 1, b - 1) + 
+        min(8 - a, b - 1) +
+        min(a - 1, 8 - b) + 
+        min(8 - a, 8 - b);
+```
+
+---
+
+## Antonijevo rješenje
+
+Antonio je primjetio kako uvijek dobija samo jedan od četiri različita broja kao izlaz: 7, 9, 11 ili 13. Zašto je tako? Uvijek postoji dalji rub ploče s koje se vidi uvijek sedam napadanih polja, prije nego što se dođe do retka ili stupca lovca. Pogledajte skicu ove četiri ploče:
+
+```
+
+                                      1 2 3 4   5 6 7    1 2 3   4 5 6 7
+----O----------    . | . X . . . .1   . . . . . . . .    . . . . . . . X
+. X . X . . . .    X | X . . . . .2   X . . . . . . .    X . . . . . X .
+X . . . X . . .    . O . . . . . .    . X . . . . . X    . X . . . X . .
+. . . . . X . .    X | X . . . . .3   . . X . . . X .    . . X . X . . .
+. . . . . . X .    . | . X . . . .4   . . . X . X . .    ------O--------
+. . . . . . . X    . | . . X . . .5   --------O------    . . X . X . . .
+. . . . . . . .    . | . . . X . .6   . . . X . X . .    . X . . . X . .
+. . . . . . . .    . | . . . . X .7   . . X . . . X .    X . . . . . X .
+1 2   3 4 5 6 7
+```
+
+---
+
+## Napadana polja s druge strane lovca
+
+No, tih sedam polja očito nije cijelo rješenje. Ovisno o tome koliko je lovac daleko od ruba, s druge strane ima još 0, 2, 4, ili 6 napadanih polja. Pogledajte skicu:
+
+```
+Lovac na rubu      1 polje od ruba    2 polja od ruba    U sredini ploče
+
+. . O . . . . .    . . . X . . . .    . . . . . . . .    . . . . . . . X
+. X . X . . . .    X . X . . . . .    X . . . . . . .    X . . . . . X .
+X . . . X . . .    . O . . . . . .    . X . . . . . X    . X . . . X . .
+. . . . . X . .    X . X . . . . .    . . X . . . X .    . . X . X . . .
+. . . . . . X .    . . . X . . . .    . . . X . X . .    . . . O . . . .
+. . . . . . . X    . . . . X . . .    . . . . O . . .    . . X . X . . .
+. . . . . . . .    . . . . . X . .    . . . X . X . .    . X . . . X . .
+. . . . . . . .    . . . . . . X .    . . X . . . X .    X . . . . . X .
+
+7 + 0 =            7 + 2 straga =     7 + 4 straga =     7 + 6 straga =
+
+uvijek 7 polja     uvijek 9 polja     uvijek 11 polja    uvijek 13 polja
+```
+
+**Pitanje**: Kako bi mogli podijeliti ploču prema tome koliko lovac na tom mjestu napada polja (7, 9, 11 ili 13)?
+
+---
+
+## Četiri kvadrata
+
+Ploča se dijeli u četiri koncentrična kvadrata, ovdje označeni s A, b, c i D:
+
+```
+      D D D D D D D D
+      D c c c c c c D
+      D c b b b b c D
+      D c b A A b c D
+      D c b A A b c D
+      D c b b b b c D
+      D c c c c c c D
+      D D D D D D D D
+```
+
+Svi ulazi koji upadaju u polja označena s A vraćaju 13, b vraćaju 11, c vraćaju 9, a D vraćaju 7.
+
+**Pitanje**: Kako bi vi napisali kod u C++-u koji računa broj napadanih polja ovisno o tome u kojem je kvadratu lovac?
+
+---
+
+## Rješenje s četiri kvadratna područja
+
+Prvo gledamo područje "D": prvi i zadnji red, prvi i zadnji stupac ploče.
+
+*Tek kad smo eliminirali sva ta polja* možemo gledati unutrašnji kvadrat "c".
+
+Onda možemo gledati je li lovac u kvadratu "b". Ako nije ni tu, onda mora biti u "A".
+
+```cpp
+if      (a == 1 or a == 8 or b == 1 or b == 8) cout << 7;
+else if (a == 2 or a == 7 or b == 2 or b == 7) cout << 9;
+else if (a == 3 or a == 6 or b == 3 or b == 6) cout << 11;
+else if (a == 4 or a == 5 or b == 4 or b == 5) cout << 13;
+```
+
+---
+class: center, middle
+
+# Kraj
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
