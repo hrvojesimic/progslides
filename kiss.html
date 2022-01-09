@@ -4,37 +4,248 @@
     <title>Title</title>
     <meta charset="utf-8">
     <style>
-      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
-      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
-      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&family=Roboto+Mono:wght@500&display=swap);
+      @import url(https://fonts.googleapis.com/css2?family=Lora);
 
-      body { font-family: 'Droid Serif'; }
+      body { font-family: 'Lora'; }
       h1, h2, h3 {
-        font-family: 'Yanone Kaffeesatz';
-        font-weight: normal;
+        font-family: 'Open Sans';
+        font-weight: 300;
       }
-      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-code, .remark-inline-code {
+         font-family: 'Roboto Mono';
+         font-weight: 500;
+      }
     </style>
   </head>
   <body>
     <textarea id="source">
-
 class: center, middle
 
-# Title
+# Zadatak: drugi najveći broj
 
 ---
 
-# Agenda
+# Zadatak
 
-1. Introduction
-2. Deep-dive
-3. ...
+Napisati program koji za
+
+- uneseni broj *N* > 1
+
+- i *N* prirodnih brojeva
+
+ispisuje van drugi najveći od unesenih brojeva.
+
+Ako su prva dva broja jednake veličine onda ispisuje taj broj.
 
 ---
 
-# Introduction
+# Najgora stvar u programiranju
 
+Najgora stvar u programiranju je **kompliciranje**.
+
+Poznata je po kratici **KISS**
+
+<h3 style="text-align: center">Keep it simple, stupid!</h3>
+
+Uvijek morate težiti jednostavnosti. Kako je Albert Einstein rekao:
+
+> *Napravi sve najjednostavnije što možeš, ali ne jednostavnije od toga.*
+
+---
+
+```cpp
+  #include <iostream>
+  #include <algorithm>
+  using namespace std;
+
+  int main() {
+    int n;
+    cin >> n;
+    int a[100000];
+    for (int i = 0; i < n; i++){
+      cin >> a[i];
+    }
+    sort(a, a + n);
+    reverse(a, a + n);
+    cout << a[1];
+  }
+```
+
+Umjesto:
+
+```cpp
+reverse(a, a + n);
+cout << a[1];
+```
+
+Brže i kraće:
+
+```cpp
+cout << a[n - 2];
+```
+
+---
+
+# Nečitljivost
+
+Nazivanje varijabli slučajnim slovima `a`, `b` itd. je nečitljivo.
+
+
+
+---
+
+# Pravila nazivanja
+
+- Varijable zovi kao što se zovu u zadatku.
+
+> > `n` je bolje od `a` za varijablu koja predstavlja ulazni podatak *N*
+
+- Ako postoji običaj, drži se običaja.
+
+> > `i` je bolje od `c` za brojač u `for` petlji
+
+- Nazovi varijablu tako da je i sutra možeš razaznati.
+
+> > `najveci` je bolje od `f` za varijablu koja čuva najveći broj
+
+- Radije koristi kratko ime ako možeš smisliti dobar naziv.
+
+> > `max1` i `max2` su bolji od `najveci` i `drugi_najveci`
+
+
+---
+
+Primjer za ulaz 3, 4:
+
+```
+. . . . . X . .
+X . . . X . . .
+. X . X . . . .
+. . O . . . . .
+. X . X . . . .
+X . . . X . . .
+. . . . . X . .
+. . . . . . X .
+```
+
+
+---
+
+Četiri kraka:
+
+```
+. . | . . X . .
+X . | . X . . .
+. X | X . . . .
+----O----------
+. X | X . . . .
+X . | . X . . .
+. . | . . X . .
+. . | . . . X .
+```
+
+```cpp
+int x = x0 + 1, y = y0 + 1;
+while (x <= 8 and y <= 8) {
+  mogucnosti++;
+  x++;
+  y++;
+}
+```
+
+```cpp
+for (int x = x0 + 1, y = y0 + 1; x <= 8 and y <= 8; x++, y++) {
+  mogucnosti++;
+}
+```
+
+---
+
+```cpp
+for (int x = 1,      y = 1;      x < x0 and y < y0; x++, y++) {
+  napada++;
+}
+for (int x = 1,      y = y0 + 1; x < x0 and y <= 8; x++, y++) {
+  napada++;
+}
+for (int x = x0 + 1, y = 1;      x <= 8 and y < y0; x++, y++) {
+  napada++;
+}
+for (int x = x0 + 1, y = y0 + 1; x <= 8 and y <= 8; x++, y++) {
+  napada++;
+}
+```
+
+---
+
+```
+1 2 | 1 2 X 4 5
+X . | 2 X . . .
+3 X | X . . . .
+----O----------
+1 X | X 2 3 4 5
+X . | 2 X . . .
+3 . | 3 . X . .
+4 . | 4 . . X .
+```
+
+Standardna funkcija `min(int a, int b)` vraća manji od dva argumenta.
+
+Npr. `min(2, 3)` vraća 2, a `min(7, 1)` vraća 1.
+
+Onda izračun broja napadanih polja svedemo na zbrajanje manjih dimenzija četiri potpolja:
+
+```cpp
+cout << min(x0 - 1, y0 - 1) + 
+        min(8 - x0, y0 - 1) +
+        min(x0 - 1, 8 - y0) + 
+        min(8 - x0, 8 - y0);
+```
+
+
+---
+
+```
+Lovac na rubu      1 polje od ruba    2 polja od ruba    U sredini ploče
+
+                                      1 2 3 4   5 6 7    1 2 3   4 5 6 7
+. . O . . . . .    . . . X . . . .1   . . . . . . . .    . . . . . . . X
+. X . X . . . .    X . X . . . . .2   X . . . . . . .    X . . . . . X .
+X . . . X . . .    . O . . . . . .    . X . . . . . X    . X . . . X . .
+. . . . . X . .    X . X . . . . .3   . . X . . . X .    . . X . X . . .
+. . . . . . X .    . . . X . . . .4   . . . X . X . .    . . . O . . . .
+. . . . . . . X    . . . . X . . .5   . . . . O . . .    . . X . X . . .
+. . . . . . . .    . . . . . X . .6   . . . X . X . .    . X . . . X . .
+. . . . . . . .    . . . . . . X .7   . . X . . . X .    X . . . . . X .
+1 2   3 4 5 6 7
+
+7 + 0 =            7 + 2 straga =     7 + 4 straga =     7 + 6 straga =
+
+uvijek 7 polja     uvijek 9 polja     uvijek 11 polja    uvijek 13 polja
+```
+
+---
+
+Četiri kruga:
+
+```
+D D D D D D D D
+D c c c c c c D
+D c b b b b c D
+D c b A A b c D
+D c b A A b c D
+D c b b b b c D
+D c c c c c c D
+D D D D D D D D
+```
+
+```cpp
+if      (x0 == 1 or x0 == 8 or y0 == 1 or y0 == 8) cout << 7;
+else if (x0 == 2 or x0 == 7 or y0 == 2 or y0 == 7) cout << 9;
+else if (x0 == 3 or x0 == 6 or y0 == 3 or y0 == 6) cout << 11;
+else if (x0 == 4 or x0 == 5 or y0 == 4 or y0 == 5) cout << 13;
+```
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
     </script>
